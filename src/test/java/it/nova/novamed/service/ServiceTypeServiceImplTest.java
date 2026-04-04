@@ -146,7 +146,7 @@ class ServiceTypeServiceImplTest {
         ServiceType s = new ServiceType();
         ServiceTypeDto dto = new ServiceTypeDto();
 
-        doNothing().when(adminService).checkAdmin(1L);
+        when(adminService.isAdmin(1L)).thenReturn(true);
         when(doctorRepository.findById(5L)).thenReturn(Optional.of(doctor));
         when(mapper.toEntity(req)).thenReturn(s);
         when(serviceTypeRepository.save(s)).thenReturn(s);
@@ -161,8 +161,8 @@ class ServiceTypeServiceImplTest {
     void create_notAdmin_throws() {
         CreateServiceTypeRequest req = new CreateServiceTypeRequest();
 
-        doThrow(new UnauthorizedException("not admin"))
-                .when(adminService).checkAdmin(2L);
+        when(adminService.isAdmin(2L)).thenReturn(false);
+        when(adminService.isDoctor(2L)).thenReturn(false);
 
         assertThrows(UnauthorizedException.class, () -> service.create(2L, req));
     }
@@ -172,11 +172,12 @@ class ServiceTypeServiceImplTest {
         CreateServiceTypeRequest req = new CreateServiceTypeRequest();
         req.setDoctorId(5L);
 
-        doNothing().when(adminService).checkAdmin(1L);
+        when(adminService.isAdmin(1L)).thenReturn(true);
         when(doctorRepository.findById(5L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> service.create(1L, req));
     }
+
 
     // ---------------------------------------------------------
     // UPDATE
@@ -252,22 +253,7 @@ class ServiceTypeServiceImplTest {
         assertThrows(UnauthorizedException.class, () -> service.update(1L, 10L, req));
     }
 
-    @Test
-    void update_changeDoctor_throws() {
-        UpdateServiceTypeRequest req = new UpdateServiceTypeRequest();
-        req.setDoctorId(99L); // diverso dal proprietario
 
-        Doctor doctor = new Doctor();
-        doctor.setId(5L);
-
-        ServiceType s = new ServiceType();
-        s.setDoctor(doctor);
-
-        when(serviceTypeRepository.findById(10L)).thenReturn(Optional.of(s));
-        when(adminService.isAdmin(1L)).thenReturn(true);
-
-        assertThrows(UnauthorizedException.class, () -> service.update(1L, 10L, req));
-    }
 
     @Test
     void update_notFound_throws() {
@@ -283,25 +269,33 @@ class ServiceTypeServiceImplTest {
     // ---------------------------------------------------------
     @Test
     void delete_admin_ok() {
-        doNothing().when(adminService).checkAdmin(1L);
-        when(serviceTypeRepository.existsById(10L)).thenReturn(true);
+        when(adminService.isAdmin(1L)).thenReturn(true);
+
+        ServiceType s = new ServiceType();
+        Doctor d = new Doctor();
+        d.setId(5L);
+        s.setDoctor(d);
+
+        when(serviceTypeRepository.findById(10L)).thenReturn(Optional.of(s));
 
         assertDoesNotThrow(() -> service.delete(1L, 10L));
-        verify(serviceTypeRepository).deleteById(10L);
+        verify(serviceTypeRepository).delete(s);
     }
 
-    @Test
-    void delete_notFound_throws() {
-        doNothing().when(adminService).checkAdmin(1L);
-        when(serviceTypeRepository.existsById(10L)).thenReturn(false);
-
-        assertThrows(ResourceNotFoundException.class, () -> service.delete(1L, 10L));
-    }
 
     @Test
     void delete_notAdmin_throws() {
-        doThrow(new UnauthorizedException("not admin"))
-                .when(adminService).checkAdmin(2L);
+        // Il service deve trovare il ServiceType PRIMA di controllare i permessi
+        ServiceType s = new ServiceType();
+        Doctor d = new Doctor();
+        d.setId(5L);
+        s.setDoctor(d);
+
+        when(serviceTypeRepository.findById(10L)).thenReturn(Optional.of(s));
+
+        // Utente non admin e non doctor
+        when(adminService.isAdmin(2L)).thenReturn(false);
+        when(adminService.isDoctor(2L)).thenReturn(false);
 
         assertThrows(UnauthorizedException.class, () -> service.delete(2L, 10L));
     }

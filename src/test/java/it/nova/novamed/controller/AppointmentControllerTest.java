@@ -4,9 +4,12 @@ import it.nova.novamed.dto.appointment.AppointmentDto;
 import it.nova.novamed.dto.calendar.MonthlyCalendarDto;
 import it.nova.novamed.dto.calendar.WeeklyCalendarDto;
 import it.nova.novamed.exception.GlobalExceptionHandler;
+import it.nova.novamed.repository.PatientRepository;
 import it.nova.novamed.service.AppointmentCalendarService;
 import it.nova.novamed.service.AppointmentService;
+import it.nova.novamed.service.DoctorService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,6 +39,12 @@ class AppointmentControllerTest {
 
     @MockBean
     private AppointmentCalendarService appointmentCalendarService;
+
+    @MockBean
+    private DoctorService doctorService;
+
+    @MockBean
+    private PatientRepository patientRepository;
 
     private static final long USER_ID = 1L;
 
@@ -151,21 +160,6 @@ class AppointmentControllerTest {
         mockMvc.perform(get("/api/appointments/patient/5")
                         .sessionAttr("userId", USER_ID)
                         .sessionAttr("role", "ADMIN"))
-                .andExpect(status().isOk());
-    }
-
-    // ---------------------------------------------------------
-    // GET BY DOCTOR
-    // ---------------------------------------------------------
-    @Test
-    void getByDoctor_returnsList() throws Exception {
-
-        Mockito.when(appointmentService.getByDoctor(USER_ID, 5L))
-                .thenReturn(List.of());
-
-        mockMvc.perform(get("/api/appointments/doctor/5")
-                        .sessionAttr("userId", USER_ID)
-                        .sessionAttr("role", "DOCTOR"))
                 .andExpect(status().isOk());
     }
 

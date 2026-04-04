@@ -1,9 +1,11 @@
 package it.nova.novamed.controller;
 
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import it.nova.novamed.dto.auth.ChangePasswordRequest;
 import it.nova.novamed.dto.patient.CreatePatientRequest;
 import it.nova.novamed.dto.patient.PatientDto;
 import it.nova.novamed.model.User;
+import it.nova.novamed.repository.UserRepository;
 import it.nova.novamed.service.AuthService;
 import it.nova.novamed.dto.auth.LoginRequest;
 import it.nova.novamed.dto.auth.LoginResponse;
@@ -31,6 +33,7 @@ import static it.nova.novamed.util.SessionUtils.requireUserId;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserRepository userRepository;
 
     // ---------------------------------------------------------
     // GET CURRENT USER
@@ -107,7 +110,7 @@ public class AuthController {
     // CHANGE PASSWORD
     // ---------------------------------------------------------
     @PostMapping("/change-password")
-    public ResponseEntity<Void> changePassword(
+    public ResponseEntity<Map<String, Object>> changePassword(
             HttpServletRequest request,
             @Valid @RequestBody ChangePasswordRequest req
     ) {
@@ -115,7 +118,14 @@ public class AuthController {
         Long userId = requireUserId(session);
 
         authService.changePassword(userId, req);
-        return ResponseEntity.ok().build();
+
+        User updated = userRepository.findById(userId).orElseThrow();
+        session.setAttribute("user", updated);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Password changed successfully"
+        ));
     }
 
     // ---------------------------------------------------------

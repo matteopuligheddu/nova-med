@@ -40,6 +40,7 @@ public class AdminController {
     private final AppointmentService appointmentService;
     private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
+    private final DoctorAdminMapper doctorAdminMapper;
 
     // ---------------------------------------------------------
     // UTILITY
@@ -52,18 +53,6 @@ public class AdminController {
         }
     }
 
-    // ---------------------------------------------------------
-    // CREATE ADMIN (non usa sessione → OK)
-    // ---------------------------------------------------------
-
-
-    @PostMapping("/create")
-    public User createAdmin(
-            @RequestParam String email,
-            @RequestParam String password
-    ) {
-        return adminService.createAdmin(email, password);
-    }
 
     // ---------------------------------------------------------
 // CREATE DOCTOR
@@ -108,8 +97,9 @@ public class AdminController {
 // ---------------------------------------------------------
     @GetMapping("/doctors")
     public List<DoctorAdminDto> getAllDoctors() {
-        return DoctorAdminMapper.toDTOList(doctorRepository.findAll());
+        return doctorAdminMapper.toDTOList(doctorRepository.findAll());
     }
+
 
     // ---------------------------------------------------------
 // GET PATIENT BY ID
@@ -128,8 +118,9 @@ public class AdminController {
     public DoctorAdminDto getDoctor(@PathVariable Long doctorId) {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
-        return DoctorAdminMapper.toDTO(doctor);
+        return doctorAdminMapper.toDTO(doctor);
     }
+
 
     // ---------------------------------------------------------
 // UPDATE PATIENT

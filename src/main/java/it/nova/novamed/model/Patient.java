@@ -32,5 +32,9 @@ public class Patient {
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.REMOVE)
     private List<Appointment> appointments;
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 }
 

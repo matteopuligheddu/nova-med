@@ -10,7 +10,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AppointmentMapperTest {
 
-    private final AppointmentMapper mapper = new AppointmentMapper();
+    private final DoctorMapper doctorMapper = new DoctorMapper();
+    private final ServiceTypeMapper serviceTypeMapper = new ServiceTypeMapper();
+
+    private final AppointmentMapper mapper =
+            new AppointmentMapper(doctorMapper, serviceTypeMapper);
+
 
     @Test
     void toDTO_ok() {

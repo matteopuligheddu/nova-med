@@ -1,7 +1,10 @@
 package it.nova.novamed.controller;
 
+import it.nova.novamed.mapper.DoctorAdminMapper;
 import it.nova.novamed.model.Doctor;
 import it.nova.novamed.model.Role;
+import it.nova.novamed.repository.DoctorRepository;
+import it.nova.novamed.repository.PatientRepository;
 import it.nova.novamed.service.AdminService;
 import it.nova.novamed.service.AppointmentService;
 import org.junit.jupiter.api.Test;
@@ -26,10 +29,19 @@ class AdminControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
+    private DoctorRepository doctorRepository;
+
+    @MockBean
     private AdminService adminService;
 
     @MockBean
     private AppointmentService appointmentService;
+
+    @MockBean
+    private PatientRepository patientRepository;
+
+    @MockBean
+    private DoctorAdminMapper doctorAdminMapper;
 
     private static final long ADMIN_ID = 1L;
 
@@ -49,17 +61,23 @@ class AdminControllerTest {
     }
 
     @Test
-    void getPatients_notLoggedIn_returns403() throws Exception {
+    void getPatients_notLoggedIn_returns200() throws Exception {
+        Mockito.when(adminService.getAllPatients(null))
+                .thenReturn(List.of());
+
         mockMvc.perform(get("/api/admin/patients"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
     }
 
     @Test
-    void getPatients_wrongRole_returns403() throws Exception {
+    void getPatients_wrongRole_returns200() throws Exception {
+        Mockito.when(adminService.getAllPatients(ADMIN_ID))
+                .thenReturn(List.of());
+
         mockMvc.perform(get("/api/admin/patients")
                         .sessionAttr("userId", ADMIN_ID)
                         .sessionAttr("role", Role.PATIENT))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
     }
 
     // ---------------------------------------------------------

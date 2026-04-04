@@ -185,15 +185,16 @@ public class AppointmentServiceImpl implements AppointmentService {
     // ---------------------------------------------------------
     public List<AppointmentDto> getByPatient(Long userId, Long patientId) {
 
-        Patient p = patientRepository.findById(patientId)
+        // 1. Recupero il paziente loggato
+        Patient loggedPatient = patientRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
 
-        if (adminService.isPatient(userId)) {
-            adminService.checkPatientOwnsAppointment(userId, p.getId());
-        } else {
-            adminService.checkAdmin(userId);
+        // 2. Controllo che stia chiedendo i SUOI appuntamenti
+        if (!loggedPatient.getId().equals(patientId)) {
+            throw new UnauthorizedException("Not your appointments");
         }
 
+        // 3. Ritorno la lista senza cercare appointment singoli
         return appointmentRepository.findByPatientId(patientId)
                 .stream()
                 .map(mapper::toDTO)
@@ -203,16 +204,9 @@ public class AppointmentServiceImpl implements AppointmentService {
     // ---------------------------------------------------------
     // GET BY DOCTOR (admin/doctor)
     // ---------------------------------------------------------
-    public List<AppointmentDto> getByDoctor(Long userId, Long doctorId) {
-
+    public List<AppointmentDto> getByDoctor(Long doctorId) {
         Doctor d = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
-
-        if (adminService.isDoctor(userId)) {
-            adminService.checkDoctorOwnsAppointment(userId, d.getId());
-        } else {
-            adminService.checkAdmin(userId);
-        }
 
         return appointmentRepository.findByDoctorId(doctorId)
                 .stream()

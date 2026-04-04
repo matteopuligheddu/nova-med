@@ -184,31 +184,6 @@ class AdminServiceImplTest {
         assertThrows(UnauthorizedException.class, () -> service.getDoctorById(2L, 10L));
     }
 
-    // ---------------------------------------------------------
-    // CREATE ADMIN
-    // ---------------------------------------------------------
-    @Test
-    void createAdmin_ok() {
-        when(userRepository.existsByEmail("a@a.com")).thenReturn(false);
-
-        User saved = new User();
-        saved.setEmail("a@a.com");
-        saved.setMustChangePassword(false);
-
-        when(passwordEncoder.encode("pwd")).thenReturn("ENC");
-        when(userRepository.save(any())).thenReturn(saved);
-
-        User result = service.createAdmin("a@a.com", "pwd");
-
-        assertEquals("a@a.com", result.getEmail());
-    }
-
-    @Test
-    void createAdmin_emailExists_throws() {
-        when(userRepository.existsByEmail("a@a.com")).thenReturn(true);
-
-        assertThrows(RuntimeException.class, () -> service.createAdmin("a@a.com", "pwd"));
-    }
 
     // ---------------------------------------------------------
     // CREATE DOCTOR
@@ -377,12 +352,16 @@ class AdminServiceImplTest {
         User doctorUser = doctorUser(99L);
         when(userRepository.findById(99L)).thenReturn(Optional.of(doctorUser));
 
-        doNothing().when(doctorRepository).deleteByUser_Id(99L);
-        doNothing().when(userRepository).delete(doctorUser);
+        Doctor doctor = new Doctor();
+        doctor.setId(123L); // <<< AGGIUNTO
+        doctor.setUser(doctorUser);
+
+        when(doctorRepository.findByUser_Id(99L)).thenReturn(Optional.of(doctor));
 
         assertDoesNotThrow(() -> service.deleteUser(1L, 99L));
 
-        verify(doctorRepository).deleteByUser_Id(99L);
+        verify(doctorRepository).findByUser_Id(99L);
+        verify(doctorRepository).delete(doctor);
         verify(userRepository).delete(doctorUser);
     }
 
@@ -393,12 +372,16 @@ class AdminServiceImplTest {
         User patientUser = patientUser(77L);
         when(userRepository.findById(77L)).thenReturn(Optional.of(patientUser));
 
-        doNothing().when(patientRepository).deleteByUser_Id(77L);
-        doNothing().when(userRepository).delete(patientUser);
+        Patient patient = new Patient();
+        patient.setId(555L); // <<< AGGIUNTO
+        patient.setUser(patientUser);
+
+        when(patientRepository.findByUser_Id(77L)).thenReturn(Optional.of(patient));
 
         assertDoesNotThrow(() -> service.deleteUser(1L, 77L));
 
-        verify(patientRepository).deleteByUser_Id(77L);
+        verify(patientRepository).findByUser_Id(77L);
+        verify(patientRepository).delete(patient);
         verify(userRepository).delete(patientUser);
     }
 

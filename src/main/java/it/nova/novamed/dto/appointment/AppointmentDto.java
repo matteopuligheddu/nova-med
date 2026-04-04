@@ -1,5 +1,7 @@
 package it.nova.novamed.dto.appointment;
 
+import it.nova.novamed.dto.doctor.DoctorDto;
+import it.nova.novamed.dto.service.ServiceTypeDto;
 import it.nova.novamed.model.AppointmentStatus;
 import java.time.Instant;
 import lombok.Data;
@@ -17,7 +19,13 @@ public class AppointmentDto {
     private Long patientId;
     private Long doctorId;
     private Long serviceTypeId;
+
     private String patientName;
     private String doctorName;
+
+    private DoctorDto doctor;
+    private ServiceTypeDto serviceType;
+    private String serviceTypeName;
+
     private String notes;
 }

@@ -2,15 +2,20 @@ package it.nova.novamed.mapper;
 
 import it.nova.novamed.dto.admin.DoctorAdminDto;
 import it.nova.novamed.dto.admin.UserAdminDto;
+import it.nova.novamed.dto.service.ServiceTypeDto;
 import it.nova.novamed.model.Doctor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class DoctorAdminMapper {
 
-    public static DoctorAdminDto toDTO(Doctor doctor) {
+    private final ServiceTypeMapper serviceTypeMapper;
+
+    public DoctorAdminDto toDTO(Doctor doctor) {
         if (doctor == null) return null;
 
         DoctorAdminDto dto = new DoctorAdminDto();
@@ -26,12 +31,19 @@ public class DoctorAdminMapper {
             dto.setUser(userDTO);
         }
 
+
+        dto.setServiceTypes(
+                doctor.getServiceTypes().stream()
+                        .map(serviceTypeMapper::toDTO)
+                        .toList()
+        );
+
         return dto;
     }
 
-    public static List<DoctorAdminDto> toDTOList(List<Doctor> doctors) {
+    public List<DoctorAdminDto> toDTOList(List<Doctor> doctors) {
         return doctors.stream()
-                .map(DoctorAdminMapper::toDTO)
+                .map(this::toDTO)
                 .toList();
     }
 }

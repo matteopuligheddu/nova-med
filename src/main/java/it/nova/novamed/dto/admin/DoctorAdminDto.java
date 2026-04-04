@@ -1,7 +1,10 @@
 package it.nova.novamed.dto.admin;
 
 
+import it.nova.novamed.dto.service.ServiceTypeDto;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class DoctorAdminDto {
@@ -11,5 +14,6 @@ public class DoctorAdminDto {
     private String specialization;
 
     private UserAdminDto user;
+    private List<ServiceTypeDto> serviceTypes;
 }
 

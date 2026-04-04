@@ -24,7 +24,6 @@ public interface AdminService {
     DoctorDto getDoctorById(Long adminUserId, Long doctorId);
 
     // CREATE
-    User createAdmin(String email, String password);
     Doctor createDoctor(Long adminUserId, CreateDoctorRequest request);
     Patient createPatient(Long adminUserId, CreatePatientRequest request);
 

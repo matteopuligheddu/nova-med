@@ -17,7 +17,7 @@ public interface AppointmentService {
 
     List<AppointmentDto> getByPatient(Long userId, Long patientId);
 
-    List<AppointmentDto> getByDoctor(Long userId, Long doctorId);
+    List<AppointmentDto> getByDoctor(Long doctorId);
 
     AppointmentDto accept(Long userId, Long appointmentId);
 

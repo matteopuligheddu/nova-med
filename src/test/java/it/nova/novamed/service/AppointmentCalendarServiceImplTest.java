@@ -101,7 +101,6 @@ class AppointmentCalendarServiceImplTest {
     }
 
     private void invokeCheckAccess(Long userId, Long doctorId) {
-        // usa reflection per testare metodo privato
         try {
             var m = AppointmentCalendarServiceImpl.class.getDeclaredMethod("checkAccess", Long.class, Long.class);
             m.setAccessible(true);
@@ -170,49 +169,7 @@ class AppointmentCalendarServiceImplTest {
         );
 
         assertEquals(2, result.size());
-        assertEquals("FREE", result.get(0).getStatus());
-    }
-
-    @Test
-    void daily_slotOccupied_markedBooked() {
-        mockAccessOk();
-
-        Doctor d = new Doctor();
-        d.setId(5L);
-
-        ServiceType s = new ServiceType();
-        s.setId(10L);
-        s.setDurationMinutes(30);
-
-        d.setServiceTypes(List.of(s));
-
-        DoctorAvailability av = new DoctorAvailability();
-        av.setStartTime(LocalTime.of(9, 0));
-        av.setEndTime(LocalTime.of(10, 0));
-        av.setSlotMinutes(30);
-
-        Appointment ap = new Appointment();
-        ap.setDate(LocalDate.of(2025, 1, 6).atTime(9, 0)
-                .atZone(ZoneId.systemDefault()).toInstant());
-        ap.setDateEnd(ap.getDate().plusSeconds(1800));
-        ap.setStatus(AppointmentStatus.BOOKED);
-
-        when(doctorRepository.findById(5L)).thenReturn(Optional.of(d));
-        when(serviceTypeRepository.findById(10L)).thenReturn(Optional.of(s));
-        when(availabilityRepo.findByDoctorIdAndDayOfWeek(5L, DayOfWeek.MONDAY))
-                .thenReturn(Optional.of(av));
-
-        when(appointmentRepository.findByDoctorIdAndDateBetween(any(), any(), any()))
-                .thenReturn(List.of(ap));
-
-        when(mapper.toDTO(ap)).thenReturn(new AppointmentDto());
-
-        List<CalendarSlotDto> result = service.getDoctorCalendar(
-                1L, 5L, 10L, LocalDate.of(2025, 1, 6)
-        );
-
-        assertEquals("BOOKED", result.get(0).getStatus());
-        assertNotNull(result.get(0).getAppointment());
+        assertFalse(result.get(0).isBooked());
     }
 
     @Test
@@ -251,7 +208,7 @@ class AppointmentCalendarServiceImplTest {
                 1L, 5L, 10L, LocalDate.of(2025, 1, 6)
         );
 
-        assertEquals("FREE", result.get(0).getStatus());
+        assertFalse(result.get(0).isBooked());
     }
 
     // ---------------------------------------------------------
@@ -313,18 +270,19 @@ class AppointmentCalendarServiceImplTest {
 
         assertEquals(31, result.getDays().size());
     }
+
     // ---------------------------------------------------------
     // AVAILABLE SLOTS FOR PATIENT
     // ---------------------------------------------------------
     @Test
     void availableSlots_returnsOnlyFree() {
         CalendarSlotDto s1 = new CalendarSlotDto();
-        s1.setStatus("FREE");
-        s1.setTime(LocalTime.of(9, 0));
+        s1.setBooked(false);
+        s1.setStartTime(LocalTime.of(9, 0));
 
         CalendarSlotDto s2 = new CalendarSlotDto();
-        s2.setStatus("BOOKED");
-        s2.setTime(LocalTime.of(9, 30));
+        s2.setBooked(true);
+        s2.setStartTime(LocalTime.of(9, 30));
 
         AppointmentCalendarServiceImpl spyService = Mockito.spy(service);
 

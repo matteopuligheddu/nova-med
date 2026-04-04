@@ -4,9 +4,13 @@ import it.nova.novamed.dto.appointment.AppointmentRequest;
 import it.nova.novamed.dto.calendar.CalendarSlotDto;
 import it.nova.novamed.dto.calendar.MonthlyCalendarDto;
 import it.nova.novamed.dto.calendar.WeeklyCalendarDto;
+import it.nova.novamed.exception.ResourceNotFoundException;
 import it.nova.novamed.exception.UnauthorizedException;
+import it.nova.novamed.model.Patient;
+import it.nova.novamed.repository.PatientRepository;
 import it.nova.novamed.service.AppointmentCalendarService;
 import it.nova.novamed.service.AppointmentService;
+import it.nova.novamed.service.DoctorService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -32,6 +36,8 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final AppointmentCalendarService appointmentCalendarService;
+    private final DoctorService doctorService;
+    private final PatientRepository patientRepository;
 
     // ---------------------------------------------------------
     // GET BY ID (admin/doctor/patient - controllo nel service)
@@ -104,6 +110,21 @@ public class AppointmentController {
 
         return appointmentService.getByPatient(userId, patientId);
     }
+    // ---------------------------------------------------------
+// GET MY APPOINTMENTS (patient only)
+// ---------------------------------------------------------
+    @GetMapping("/patient/me")
+    public List<AppointmentDto> getMyAppointments(HttpServletRequest request) {
+        HttpSession session = requireSession(request);
+        Long userId = requireUserId(session);
+
+        // Recupero il paziente loggato
+        Patient p = patientRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
+
+        // Ritorno i suoi appuntamenti
+        return appointmentService.getByPatient(userId, p.getId());
+    }
 
     // ---------------------------------------------------------
     // GET BY DOCTOR
@@ -114,9 +135,15 @@ public class AppointmentController {
             @PathVariable Long doctorId
     ) {
         HttpSession session = requireSession(request);
-        Long userId = requireUserId(session);
 
-        return appointmentService.getByDoctor(userId, doctorId);
+        Long userId = requireUserId(session);
+        Long sessionDoctorId = doctorService.getDoctorIdByUserId(userId);
+
+        if (!sessionDoctorId.equals(doctorId)) {
+            throw new UnauthorizedException("Non puoi vedere le visite di un altro medico");
+        }
+
+        return appointmentService.getByDoctor(doctorId);
     }
 
     // ---------------------------------------------------------

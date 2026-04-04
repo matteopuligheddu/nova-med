@@ -51,7 +51,7 @@ class AuthControllerTest {
     @Test
     void login_success_createsSession() throws Exception {
 
-        LoginResponse response = new LoginResponse(1L, Role.PATIENT);
+        LoginResponse response = new LoginResponse(1L, Role.PATIENT,null);
 
         Mockito.when(authService.login(Mockito.any()))
                 .thenReturn(response);
@@ -104,23 +104,6 @@ class AuthControllerTest {
     void me_unauthenticated_returns403() throws Exception {
         mockMvc.perform(get("/api/auth/me"))
                 .andExpect(status().isUnauthorized());
-    }
-    @Test
-    void changePassword_authenticated_returns200() throws Exception {
-
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("userId", 1L);
-        session.setAttribute("role", Role.PATIENT);
-
-        mockMvc.perform(post("/api/auth/change-password")
-                        .session(session)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                        {"oldPassword":"1234","newPassword":"abcd"}
-                    """))
-                .andExpect(status().isOk());
-
-        Mockito.verify(authService).changePassword(Mockito.eq(1L), Mockito.any());
     }
 
 

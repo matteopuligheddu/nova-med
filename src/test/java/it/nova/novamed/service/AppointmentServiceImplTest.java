@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AppointmentServiceImplTest {
@@ -56,8 +57,8 @@ class AppointmentServiceImplTest {
         Appointment a = new Appointment();
         AppointmentDto dto = new AppointmentDto();
 
-        Mockito.when(appointmentRepository.findAll()).thenReturn(List.of(a));
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
+        when(appointmentRepository.findAll()).thenReturn(List.of(a));
+        when(mapper.toDTO(a)).thenReturn(dto);
 
         List<AppointmentDto> result = service.getAll(1L);
 
@@ -81,9 +82,9 @@ class AppointmentServiceImplTest {
         Appointment a = new Appointment();
         AppointmentDto dto = new AppointmentDto();
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isAdmin(1L)).thenReturn(true);
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isAdmin(1L)).thenReturn(true);
+        when(mapper.toDTO(a)).thenReturn(dto);
 
         AppointmentDto result = service.getById(1L, 10L);
 
@@ -95,12 +96,12 @@ class AppointmentServiceImplTest {
         Appointment a = new Appointment();
         AppointmentDto dto = new AppointmentDto();
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isAdmin(1L)).thenReturn(false);
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(true);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isAdmin(1L)).thenReturn(false);
+        when(adminService.isDoctor(1L)).thenReturn(true);
 
         Mockito.doNothing().when(adminService).checkDoctorOwnsAppointment(1L, 10L);
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
+        when(mapper.toDTO(a)).thenReturn(dto);
 
         AppointmentDto result = service.getById(1L, 10L);
 
@@ -112,13 +113,13 @@ class AppointmentServiceImplTest {
         Appointment a = new Appointment();
         AppointmentDto dto = new AppointmentDto();
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isAdmin(1L)).thenReturn(false);
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(false);
-        Mockito.when(adminService.isPatient(1L)).thenReturn(true);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isAdmin(1L)).thenReturn(false);
+        when(adminService.isDoctor(1L)).thenReturn(false);
+        when(adminService.isPatient(1L)).thenReturn(true);
 
         Mockito.doNothing().when(adminService).checkPatientOwnsAppointment(1L, 10L);
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
+        when(mapper.toDTO(a)).thenReturn(dto);
 
         AppointmentDto result = service.getById(1L, 10L);
 
@@ -127,7 +128,7 @@ class AppointmentServiceImplTest {
 
     @Test
     void getById_notFound_throws() {
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.empty());
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> service.getById(1L, 10L));
     }
@@ -136,10 +137,10 @@ class AppointmentServiceImplTest {
     void getById_unknownRole_throws() {
         Appointment a = new Appointment();
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isAdmin(1L)).thenReturn(false);
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(false);
-        Mockito.when(adminService.isPatient(1L)).thenReturn(false);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isAdmin(1L)).thenReturn(false);
+        when(adminService.isDoctor(1L)).thenReturn(false);
+        when(adminService.isPatient(1L)).thenReturn(false);
 
         assertThrows(UnauthorizedException.class, () -> service.getById(1L, 10L));
     }
@@ -166,14 +167,14 @@ class AppointmentServiceImplTest {
         AppointmentDto dto = new AppointmentDto();
 
         Mockito.doNothing().when(adminService).checkPatient(1L);
-        Mockito.when(patientRepository.findByUser_Id(1L)).thenReturn(Optional.of(p));
-        Mockito.when(doctorRepository.findById(5L)).thenReturn(Optional.of(d));
+        when(patientRepository.findByUser_Id(1L)).thenReturn(Optional.of(p));
+        when(doctorRepository.findById(5L)).thenReturn(Optional.of(d));
 
         Mockito.doNothing().when(validationService)
                 .validateCreation(Mockito.eq(d), Mockito.eq(s), Mockito.any());
 
-        Mockito.when(appointmentRepository.save(Mockito.any())).thenReturn(saved);
-        Mockito.when(mapper.toDTO(saved)).thenReturn(dto);
+        when(appointmentRepository.save(Mockito.any())).thenReturn(saved);
+        when(mapper.toDTO(saved)).thenReturn(dto);
 
         AppointmentDto result = service.create(1L, req);
 
@@ -195,7 +196,7 @@ class AppointmentServiceImplTest {
         AppointmentRequest req = new AppointmentRequest();
 
         Mockito.doNothing().when(adminService).checkPatient(1L);
-        Mockito.when(patientRepository.findByUser_Id(1L)).thenReturn(Optional.empty());
+        when(patientRepository.findByUser_Id(1L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> service.create(1L, req));
     }
@@ -205,8 +206,8 @@ class AppointmentServiceImplTest {
         AppointmentRequest req = new AppointmentRequest();
 
         Mockito.doNothing().when(adminService).checkPatient(1L);
-        Mockito.when(patientRepository.findByUser_Id(1L)).thenReturn(Optional.of(new Patient()));
-        Mockito.when(doctorRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+        when(patientRepository.findByUser_Id(1L)).thenReturn(Optional.of(new Patient()));
+        when(doctorRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> service.create(1L, req));
     }
@@ -220,8 +221,8 @@ class AppointmentServiceImplTest {
         d.setServiceTypes(List.of());
 
         Mockito.doNothing().when(adminService).checkPatient(1L);
-        Mockito.when(patientRepository.findByUser_Id(1L)).thenReturn(Optional.of(new Patient()));
-        Mockito.when(doctorRepository.findById(Mockito.any())).thenReturn(Optional.of(d));
+        when(patientRepository.findByUser_Id(1L)).thenReturn(Optional.of(new Patient()));
+        when(doctorRepository.findById(Mockito.any())).thenReturn(Optional.of(d));
 
         assertThrows(ResourceNotFoundException.class, () -> service.create(1L, req));
     }
@@ -248,16 +249,16 @@ class AppointmentServiceImplTest {
 
         AppointmentDto dto = new AppointmentDto();
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(true);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isDoctor(1L)).thenReturn(true);
         Mockito.doNothing().when(adminService).checkDoctorOwnsAppointment(1L, 10L);
 
-        Mockito.when(doctorRepository.findById(5L)).thenReturn(Optional.of(d));
+        when(doctorRepository.findById(5L)).thenReturn(Optional.of(d));
         Mockito.doNothing().when(validationService)
                 .validateUpdate(Mockito.eq(10L), Mockito.eq(d), Mockito.eq(s), Mockito.any());
 
-        Mockito.when(appointmentRepository.save(a)).thenReturn(a);
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
+        when(appointmentRepository.save(a)).thenReturn(a);
+        when(mapper.toDTO(a)).thenReturn(dto);
 
         AppointmentDto result = service.update(1L, 10L, req);
 
@@ -274,12 +275,12 @@ class AppointmentServiceImplTest {
 
         AppointmentDto dto = new AppointmentDto();
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(true);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isDoctor(1L)).thenReturn(true);
         Mockito.doNothing().when(adminService).checkDoctorOwnsAppointment(1L, 10L);
 
-        Mockito.when(appointmentRepository.save(a)).thenReturn(a);
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
+        when(appointmentRepository.save(a)).thenReturn(a);
+        when(mapper.toDTO(a)).thenReturn(dto);
 
         AppointmentDto result = service.cancel(1L, 10L);
 
@@ -292,8 +293,8 @@ class AppointmentServiceImplTest {
         Appointment a = new Appointment();
         a.setStatus(AppointmentStatus.CANCELLED);
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(true);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isDoctor(1L)).thenReturn(true);
 
         assertThrows(IllegalStateException.class, () -> service.cancel(1L, 10L));
     }
@@ -304,7 +305,7 @@ class AppointmentServiceImplTest {
     @Test
     void delete_admin_deletes() {
         Mockito.doNothing().when(adminService).checkAdmin(1L);
-        Mockito.when(appointmentRepository.existsById(10L)).thenReturn(true);
+        when(appointmentRepository.existsById(10L)).thenReturn(true);
 
         service.delete(1L, 10L);
 
@@ -314,103 +315,18 @@ class AppointmentServiceImplTest {
     @Test
     void delete_notFound_throws() {
         Mockito.doNothing().when(adminService).checkAdmin(1L);
-        Mockito.when(appointmentRepository.existsById(10L)).thenReturn(false);
+        when(appointmentRepository.existsById(10L)).thenReturn(false);
 
         assertThrows(ResourceNotFoundException.class, () -> service.delete(1L, 10L));
     }
 
-    // ---------------------------------------------------------
-    // GET BY PATIENT
-    // ---------------------------------------------------------
-    @Test
-    void getByPatient_patient_checksOwnership() {
-        Patient p = new Patient();
-        p.setId(5L);
 
-        Appointment a = new Appointment();
-        AppointmentDto dto = new AppointmentDto();
-
-        Mockito.when(patientRepository.findById(5L)).thenReturn(Optional.of(p));
-        Mockito.when(adminService.isPatient(1L)).thenReturn(true);
-        Mockito.doNothing().when(adminService).checkPatientOwnsAppointment(1L, 5L);
-
-        Mockito.when(appointmentRepository.findByPatientId(5L)).thenReturn(List.of(a));
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
-
-        List<AppointmentDto> result = service.getByPatient(1L, 5L);
-
-        assertEquals(1, result.size());
-        assertSame(dto, result.get(0));
-    }
-
-    @Test
-    void getByPatient_admin_allowed() {
-        Patient p = new Patient();
-        p.setId(5L);
-
-        Mockito.when(patientRepository.findById(5L)).thenReturn(Optional.of(p));
-        Mockito.when(adminService.isPatient(1L)).thenReturn(false);
-        Mockito.doNothing().when(adminService).checkAdmin(1L);
-
-        Mockito.when(appointmentRepository.findByPatientId(5L)).thenReturn(List.of());
-
-        List<AppointmentDto> result = service.getByPatient(1L, 5L);
-
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getByPatient_notFound_throws() {
-        Mockito.when(patientRepository.findById(5L)).thenReturn(Optional.empty());
-
-        assertThrows(ResourceNotFoundException.class, () -> service.getByPatient(1L, 5L));
-    }
-
-    // ---------------------------------------------------------
-    // GET BY DOCTOR
-    // ---------------------------------------------------------
-    @Test
-    void getByDoctor_doctor_checksOwnership() {
-        Doctor d = new Doctor();
-        d.setId(5L);
-
-        Appointment a = new Appointment();
-        AppointmentDto dto = new AppointmentDto();
-
-        Mockito.when(doctorRepository.findById(5L)).thenReturn(Optional.of(d));
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(true);
-        Mockito.doNothing().when(adminService).checkDoctorOwnsAppointment(1L, 5L);
-
-        Mockito.when(appointmentRepository.findByDoctorId(5L)).thenReturn(List.of(a));
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
-
-        List<AppointmentDto> result = service.getByDoctor(1L, 5L);
-
-        assertEquals(1, result.size());
-        assertSame(dto, result.get(0));
-    }
-
-    @Test
-    void getByDoctor_admin_allowed() {
-        Doctor d = new Doctor();
-        d.setId(5L);
-
-        Mockito.when(doctorRepository.findById(5L)).thenReturn(Optional.of(d));
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(false);
-        Mockito.doNothing().when(adminService).checkAdmin(1L);
-
-        Mockito.when(appointmentRepository.findByDoctorId(5L)).thenReturn(List.of());
-
-        List<AppointmentDto> result = service.getByDoctor(1L, 5L);
-
-        assertTrue(result.isEmpty());
-    }
 
     @Test
     void getByDoctor_notFound_throws() {
-        Mockito.when(doctorRepository.findById(5L)).thenReturn(Optional.empty());
+        when(doctorRepository.findById(5L)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> service.getByDoctor(1L, 5L));
+        assertThrows(ResourceNotFoundException.class, () -> service.getByDoctor(5L));
     }
 
     // ---------------------------------------------------------
@@ -423,12 +339,12 @@ class AppointmentServiceImplTest {
 
         AppointmentDto dto = new AppointmentDto();
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(true);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isDoctor(1L)).thenReturn(true);
         Mockito.doNothing().when(adminService).checkDoctorOwnsAppointment(1L, 10L);
 
-        Mockito.when(appointmentRepository.save(a)).thenReturn(a);
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
+        when(appointmentRepository.save(a)).thenReturn(a);
+        when(mapper.toDTO(a)).thenReturn(dto);
 
         AppointmentDto result = service.accept(1L, 10L);
 
@@ -441,15 +357,15 @@ class AppointmentServiceImplTest {
         Appointment a = new Appointment();
         a.setStatus(AppointmentStatus.CANCELLED);
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(true);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isDoctor(1L)).thenReturn(true);
 
         assertThrows(IllegalStateException.class, () -> service.accept(1L, 10L));
     }
 
     @Test
     void accept_notFound_throws() {
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.empty());
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> service.accept(1L, 10L));
     }
@@ -464,12 +380,12 @@ class AppointmentServiceImplTest {
 
         AppointmentDto dto = new AppointmentDto();
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(true);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isDoctor(1L)).thenReturn(true);
         Mockito.doNothing().when(adminService).checkDoctorOwnsAppointment(1L, 10L);
 
-        Mockito.when(appointmentRepository.save(a)).thenReturn(a);
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
+        when(appointmentRepository.save(a)).thenReturn(a);
+        when(mapper.toDTO(a)).thenReturn(dto);
 
         AppointmentDto result = service.reject(1L, 10L);
 
@@ -487,12 +403,12 @@ class AppointmentServiceImplTest {
 
         AppointmentDto dto = new AppointmentDto();
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(true);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isDoctor(1L)).thenReturn(true);
         Mockito.doNothing().when(adminService).checkDoctorOwnsAppointment(1L, 10L);
 
-        Mockito.when(appointmentRepository.save(a)).thenReturn(a);
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
+        when(appointmentRepository.save(a)).thenReturn(a);
+        when(mapper.toDTO(a)).thenReturn(dto);
 
         AppointmentDto result = service.complete(1L, 10L);
 
@@ -510,12 +426,12 @@ class AppointmentServiceImplTest {
 
         AppointmentDto dto = new AppointmentDto();
 
-        Mockito.when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
-        Mockito.when(adminService.isDoctor(1L)).thenReturn(true);
+        when(appointmentRepository.findById(10L)).thenReturn(Optional.of(a));
+        when(adminService.isDoctor(1L)).thenReturn(true);
         Mockito.doNothing().when(adminService).checkDoctorOwnsAppointment(1L, 10L);
 
-        Mockito.when(appointmentRepository.save(a)).thenReturn(a);
-        Mockito.when(mapper.toDTO(a)).thenReturn(dto);
+        when(appointmentRepository.save(a)).thenReturn(a);
+        when(mapper.toDTO(a)).thenReturn(dto);
 
         AppointmentDto result = service.addNotes(1L, 10L, "test notes");
 

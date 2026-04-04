@@ -95,17 +95,10 @@ public class AdminServiceImpl implements AdminService {
         user.setPassword(passwordEncoder.encode(password));
         user.setRole(role);
         user.setMustChangePassword(mustChangePassword);
-        user.setMustChangePassword(false);
 
         return userRepository.save(user);
     }
 
-    // ---------------------------------------------------------
-    // CREATE ADMIN
-    // ---------------------------------------------------------
-    public User createAdmin(String email, String password) {
-        return createUser(email, password, Role.ADMIN, false);
-    }
 
     // ---------------------------------------------------------
     // CREATE DOCTOR (ADMIN ONLY)
@@ -211,15 +204,6 @@ public class AdminServiceImpl implements AdminService {
         }
 
         // Delete patient
-        if (user.getRole() == Role.PATIENT) {
-            patientRepository.deleteByUser_Id(userIdToDelete);
-        }
-
-        // Finally delete the user
-        userRepository.delete(user);
-
-
-    // Delete patient
         if (user.getRole() == Role.PATIENT) {
             patientRepository.findByUser_Id(userIdToDelete)
                     .ifPresent(patientRepository::delete);

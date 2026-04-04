@@ -8,9 +8,11 @@ import java.time.LocalTime;
 @Data
 public class CalendarSlotDto {
 
-    private LocalTime time; // es. 09:00
+    private LocalTime startTime;
+    private LocalTime endTime;
 
-    private String status; // FREE, BOOKED
+    private boolean booked;          // true se c’è un appuntamento
+    private Long appointmentId;      // id dell’appuntamento
+    private String patientName;      // nome del paziente
 
-    private AppointmentDto appointment; // null se FREE
 }

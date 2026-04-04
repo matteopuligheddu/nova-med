@@ -20,6 +20,12 @@ public class DoctorServiceImpl implements DoctorService {
     private final DoctorMapper doctorMapper;
     private final AdminServiceImpl adminService;
 
+    @Override
+    public Long getDoctorIdByUserId(Long userId) {
+        return doctorRepository.findByUser_Id(userId)
+                .map(Doctor::getId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found for user " + userId));
+    }
 
     @Override
     public DoctorDto getMyProfile(Long userId) {

@@ -12,4 +12,6 @@ public interface DoctorService {
     DoctorDto updateMyProfile(Long userId, UpdateDoctorRequest request);
 
     List<DoctorDto> getAllDoctors();
+
+    Long getDoctorIdByUserId(Long userId);
 }

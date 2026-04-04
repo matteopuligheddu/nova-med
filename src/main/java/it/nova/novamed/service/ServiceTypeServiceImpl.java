@@ -37,11 +37,11 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
     }
 
     // ---------------------------------------------------------
-    // GET BY DOCTOR (admin or doctor owner)
-    // ---------------------------------------------------------
+// GET BY DOCTOR (admin, doctor owner, patient)
+// ---------------------------------------------------------
     public List<ServiceTypeDto> getByDoctor(Long userId, Long doctorId) {
 
-        // Admin può vedere tutto
+        // Admin → può vedere tutto
         if (adminService.isAdmin(userId)) {
             return serviceTypeRepository.findAllByDoctorId(doctorId)
                     .stream()
@@ -49,7 +49,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
                     .toList();
         }
 
-        // Il dottore può vedere solo i propri servizi
+        // Doctor → può vedere solo i propri servizi
         if (adminService.isDoctor(userId)) {
             Doctor doctor = doctorRepository.findByUser_Id(userId)
                     .orElseThrow(() -> new UnauthorizedException("Doctor not found"));
@@ -58,6 +58,14 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
                 throw new UnauthorizedException("Not allowed to view this doctor's services");
             }
 
+            return serviceTypeRepository.findAllByDoctorId(doctorId)
+                    .stream()
+                    .map(mapper::toDTO)
+                    .toList();
+        }
+
+        // Patient → può vedere i servizi del medico (pubblico)
+        if (adminService.isPatient(userId)) {
             return serviceTypeRepository.findAllByDoctorId(doctorId)
                     .stream()
                     .map(mapper::toDTO)
@@ -78,20 +86,40 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
     }
 
     // ---------------------------------------------------------
-    // CREATE (ADMIN ONLY)
-    // ---------------------------------------------------------
+// CREATE (ADMIN or DOCTOR OWNER)
+// ---------------------------------------------------------
     public ServiceTypeDto create(Long userId, CreateServiceTypeRequest request) {
 
-        adminService.checkAdmin(userId);
+        // ADMIN → può creare servizi per qualsiasi medico
+        if (adminService.isAdmin(userId)) {
+            Doctor doctor = doctorRepository.findById(request.getDoctorId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
 
-        Doctor doctor = doctorRepository.findById(request.getDoctorId())
-                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
+            ServiceType s = mapper.toEntity(request);
+            s.setDoctor(doctor);
 
-        ServiceType s = mapper.toEntity(request);
-        s.setDoctor(doctor);
+            return mapper.toDTO(serviceTypeRepository.save(s));
+        }
 
-        return mapper.toDTO(serviceTypeRepository.save(s));
+        // DOCTOR → può creare servizi SOLO per sé stesso
+        if (adminService.isDoctor(userId)) {
+
+            Doctor doctor = doctorRepository.findByUser_Id(userId)
+                    .orElseThrow(() -> new UnauthorizedException("Doctor not found"));
+
+            if (!doctor.getId().equals(request.getDoctorId())) {
+                throw new UnauthorizedException("You cannot create services for another doctor");
+            }
+
+            ServiceType s = mapper.toEntity(request);
+            s.setDoctor(doctor);
+
+            return mapper.toDTO(serviceTypeRepository.save(s));
+        }
+
+        throw new UnauthorizedException("Not allowed to create service types");
     }
+
 
     // ---------------------------------------------------------
     // UPDATE (ADMIN or DOCTOR OWNER)
@@ -133,16 +161,35 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
     }
 
     // ---------------------------------------------------------
-    // DELETE (ADMIN ONLY)
-    // ---------------------------------------------------------
+// DELETE (ADMIN or DOCTOR OWNER)
+// ---------------------------------------------------------
     public void delete(Long userId, Long serviceTypeId) {
 
-        adminService.checkAdmin(userId);
+        ServiceType s = serviceTypeRepository.findById(serviceTypeId)
+                .orElseThrow(() -> new ResourceNotFoundException("ServiceType not found"));
 
-        if (!serviceTypeRepository.existsById(serviceTypeId)) {
-            throw new ResourceNotFoundException("ServiceType not found with id " + serviceTypeId);
+        Long doctorId = s.getDoctor().getId();
+
+        // ADMIN → può eliminare tutto
+        if (adminService.isAdmin(userId)) {
+            serviceTypeRepository.delete(s);
+            return;
         }
 
-        serviceTypeRepository.deleteById(serviceTypeId);
+        // DOCTOR → può eliminare solo i propri servizi
+        if (adminService.isDoctor(userId)) {
+            Doctor doctor = doctorRepository.findByUser_Id(userId)
+                    .orElseThrow(() -> new UnauthorizedException("Doctor not found"));
+
+            if (!doctor.getId().equals(doctorId)) {
+                throw new UnauthorizedException("You cannot delete this service type");
+            }
+
+            serviceTypeRepository.delete(s);
+            return;
+        }
+
+        throw new UnauthorizedException("Not allowed to delete service types");
     }
+
 }

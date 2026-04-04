@@ -46,6 +46,11 @@ public class AppointmentCalendarServiceImpl implements AppointmentCalendarServic
             if (doctor.getId().equals(doctorId)) return;
         }
 
+        // Il paziente può vedere il calendario del medico (solo per prenotare)
+        if (adminService.isPatient(userId)) {
+            return;
+        }
+
         throw new UnauthorizedException("Not allowed to view this calendar");
     }
 
@@ -72,41 +77,46 @@ public class AppointmentCalendarServiceImpl implements AppointmentCalendarServic
 
         int serviceDuration = serviceType.getDurationMinutes();
 
-        // 1) Recuperiamo la disponibilità del giorno
         DayOfWeek dow = date.getDayOfWeek();
 
         DoctorAvailability availability = availabilityRepo
                 .findByDoctorIdAndDayOfWeek(doctorId, dow)
                 .orElse(null);
 
-        // Se il medico non lavora quel giorno → nessuno slot
         if (availability == null) return List.of();
 
         int slotMinutes = availability.getSlotMinutes();
         LocalTime start = availability.getStartTime();
         LocalTime end = availability.getEndTime();
 
-        // 2) Recuperiamo gli appuntamenti del giorno
+        if (slotMinutes <= 0) {
+            throw new IllegalStateException("Invalid slotMinutes: " + slotMinutes);
+        }
+
+        if (start == null || end == null) {
+            throw new IllegalStateException("Availability times cannot be null");
+        }
+
+        if (!start.isBefore(end)) {
+            throw new IllegalStateException("Invalid time range: " + start + " - " + end);
+        }
+
         Instant startOfDay = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
         Instant endOfDay = date.plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant();
 
         List<Appointment> appointments = appointmentRepository
                 .findByDoctorIdAndDateBetween(doctorId, startOfDay, endOfDay);
 
-        // 3) Generiamo gli slot
         List<CalendarSlotDto> result = new ArrayList<>();
 
         LocalTime t = start;
 
         while (!t.plusMinutes(slotMinutes).isAfter(end)) {
+            LocalTime slotStartTime = t;
+            LocalTime slotEndTime = t.plusMinutes(slotMinutes);
 
-            Instant slotStart = date.atTime(t).atZone(ZoneId.systemDefault()).toInstant();
-            Instant slotEnd = slotStart.plus(slotMinutes, ChronoUnit.MINUTES);
-
-            // Lo slot deve essere abbastanza lungo per contenere il servizio
-            if (t.plusMinutes(serviceDuration).isAfter(end)) {
-                break;
-            }
+            Instant slotStart = date.atTime(slotStartTime).atZone(ZoneId.systemDefault()).toInstant();
+            Instant slotEnd = date.atTime(slotEndTime).atZone(ZoneId.systemDefault()).toInstant();
 
             boolean isOccupied = appointments.stream()
                     .anyMatch(a ->
@@ -116,24 +126,26 @@ public class AppointmentCalendarServiceImpl implements AppointmentCalendarServic
                     );
 
             CalendarSlotDto dto = new CalendarSlotDto();
-            dto.setTime(t);
+            dto.setStartTime(slotStartTime);
+            dto.setEndTime(slotEndTime);
 
             if (isOccupied) {
-                dto.setStatus("BOOKED");
+                dto.setBooked(true);
 
                 Appointment ap = appointments.stream()
                         .filter(a ->
-                                slotStart.isBefore(a.getDateEnd()) &&
+                                a.getStatus() != AppointmentStatus.CANCELLED &&
+                                        slotStart.isBefore(a.getDateEnd()) &&
                                         slotEnd.isAfter(a.getDate()))
                         .findFirst()
                         .orElse(null);
 
                 if (ap != null) {
-                    dto.setAppointment(mapper.toDTO(ap));
+                    dto.setAppointmentId(ap.getId());
+                    dto.setPatientName(ap.getPatient().getFullName());
                 }
-
             } else {
-                dto.setStatus("FREE");
+                dto.setBooked(false);
             }
 
             result.add(dto);
@@ -228,8 +240,8 @@ public class AppointmentCalendarServiceImpl implements AppointmentCalendarServic
         );
 
         return slots.stream()
-                .filter(s -> "FREE".equals(s.getStatus()))
-                .map(CalendarSlotDto::getTime)
+                .filter(s -> !s.isBooked())   // slot liberi
+                .map(CalendarSlotDto::getStartTime)
                 .toList();
     }
 }
