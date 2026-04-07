@@ -200,7 +200,7 @@ public class AdminServiceImpl implements AdminService {
         // Delete doctor + appointments
         if (user.getRole() == Role.DOCTOR) {
             doctorRepository.findByUser_Id(userIdToDelete)
-                    .ifPresent(doctorRepository::delete); // cascade REMOVE elimina anche gli appuntamenti
+                    .ifPresent(doctorRepository::delete);
         }
 
         // Delete patient
@@ -209,7 +209,7 @@ public class AdminServiceImpl implements AdminService {
                     .ifPresent(patientRepository::delete);
         }
 
-        // Finally delete the user
+
         userRepository.delete(user);
     }
 

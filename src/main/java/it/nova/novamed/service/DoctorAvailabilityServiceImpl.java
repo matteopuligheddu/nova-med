@@ -39,7 +39,6 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
                 Doctor doctor = doctorRepo.findByUser_Id(userId)
                         .orElseThrow(() -> new UnauthorizedException("Doctor not found"));
 
-                // FIX: controllo robusto
                 if (doctor.getId() == null || !doctor.getId().equals(doctorId)) {
                     throw new UnauthorizedException("You cannot create availability for another doctor");
                 }
@@ -63,7 +62,6 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
         a.setDayOfWeek(request.getDayOfWeek());
         a.setStartTime(request.getStartTime());
         a.setEndTime(request.getEndTime());
-        a.setSlotMinutes(request.getSlotMinutes());
 
         return mapper.toDto(availabilityRepo.save(a));
     }
@@ -78,7 +76,6 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
 
         Doctor owner = existing.getDoctor();
 
-        // FIX: controllo robusto
         if (owner == null || owner.getId() == null) {
             throw new UnauthorizedException("Invalid doctor owner");
         }
@@ -91,7 +88,7 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
                 Doctor doctor = doctorRepo.findByUser_Id(userId)
                         .orElseThrow(() -> new UnauthorizedException("Doctor not found"));
 
-                if (doctor.getId() == null || !doctor.getId().equals(doctorId)) {
+                if (!doctor.getId().equals(doctorId)) {
                     throw new UnauthorizedException("You cannot update another doctor's availability");
                 }
 
@@ -103,7 +100,7 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
         existing.setDayOfWeek(request.getDayOfWeek());
         existing.setStartTime(request.getStartTime());
         existing.setEndTime(request.getEndTime());
-        existing.setSlotMinutes(request.getSlotMinutes());
+
 
         return mapper.toDto(availabilityRepo.save(existing));
     }
@@ -118,7 +115,7 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
 
         Doctor owner = existing.getDoctor();
 
-        // FIX: controllo robusto
+
         if (owner == null || owner.getId() == null) {
             throw new UnauthorizedException("Invalid doctor owner");
         }
@@ -154,7 +151,7 @@ public class DoctorAvailabilityServiceImpl implements DoctorAvailabilityService 
                 Doctor doctor = doctorRepo.findByUser_Id(userId)
                         .orElseThrow(() -> new UnauthorizedException("Doctor not found"));
 
-                // FIX: controllo robusto
+
                 if (doctor.getId() == null || !doctor.getId().equals(doctorId)) {
                     throw new UnauthorizedException("You cannot view another doctor's availability");
                 }

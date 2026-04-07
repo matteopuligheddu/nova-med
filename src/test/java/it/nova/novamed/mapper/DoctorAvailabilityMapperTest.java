@@ -25,7 +25,6 @@ class DoctorAvailabilityMapperTest {
         a.setDayOfWeek(DayOfWeek.MONDAY);
         a.setStartTime(LocalTime.of(9, 0));
         a.setEndTime(LocalTime.of(17, 0));
-        a.setSlotMinutes(30);
 
         DoctorAvailabilityDto dto = mapper.toDto(a);
 
@@ -34,6 +33,5 @@ class DoctorAvailabilityMapperTest {
         assertEquals(DayOfWeek.MONDAY, dto.getDayOfWeek());
         assertEquals(LocalTime.of(9, 0), dto.getStartTime());
         assertEquals(LocalTime.of(17, 0), dto.getEndTime());
-        assertEquals(30, dto.getSlotMinutes());
     }
 }

@@ -1,6 +1,6 @@
 package it.nova.novamed.controller;
 
-import io.swagger.v3.oas.models.responses.ApiResponse;
+
 import it.nova.novamed.dto.auth.ChangePasswordRequest;
 import it.nova.novamed.dto.patient.CreatePatientRequest;
 import it.nova.novamed.dto.patient.PatientDto;
@@ -75,7 +75,7 @@ public class AuthController {
     }
 
     // ---------------------------------------------------------
-    // LOGIN (CREA SESSIONE + JSESSIONID)
+    // LOGIN (CREATE SESSION + JSESSIONID)
     // ---------------------------------------------------------
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
@@ -86,7 +86,6 @@ public class AuthController {
 
         LoginResponse response = authService.login(request);
 
-        // Salva i tuoi attributi custom
         session.setAttribute("userId", response.getUserId());
         session.setAttribute("role", response.getRole());
 

@@ -15,7 +15,6 @@ import it.nova.novamed.mapper.PatientAdminMapper;
 import it.nova.novamed.model.Doctor;
 import it.nova.novamed.model.Patient;
 import it.nova.novamed.model.Role;
-import it.nova.novamed.model.User;
 import it.nova.novamed.repository.DoctorRepository;
 import it.nova.novamed.repository.PatientRepository;
 import it.nova.novamed.service.AdminService;

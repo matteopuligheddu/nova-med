@@ -40,7 +40,7 @@ public class AppointmentController {
     private final PatientRepository patientRepository;
 
     // ---------------------------------------------------------
-    // GET BY ID (admin/doctor/patient - controllo nel service)
+    // GET BY ID (admin/doctor/patient)
     // ---------------------------------------------------------
     @GetMapping("/{id}")
     public AppointmentDto getById(
@@ -54,7 +54,7 @@ public class AppointmentController {
     }
 
     // ---------------------------------------------------------
-    // CREATE (PATIENT ONLY - controllo nel service)
+    // CREATE (PATIENT ONLY )
     // ---------------------------------------------------------
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

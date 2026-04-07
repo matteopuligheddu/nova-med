@@ -36,10 +36,10 @@ public class SlotServiceImpl implements SlotService {
     // ---------------------------------------------------------
     private void checkAccess(Long userId, Long doctorId) {
 
-        // Admin può vedere tutto
+
         if (adminService.isAdmin(userId)) return;
 
-        // Il dottore può vedere solo i propri slot
+
         if (adminService.isDoctor(userId)) {
             Doctor doctor = doctorRepo.findByUser_Id(userId)
                     .orElseThrow(() -> new UnauthorizedException("Doctor not found"));
@@ -47,7 +47,7 @@ public class SlotServiceImpl implements SlotService {
             if (doctor.getId().equals(doctorId)) return;
         }
 
-        // Il paziente può vedere solo slot liberi (filtrati nel controller)
+
         if (adminService.isPatient(userId)) return;
 
         throw new UnauthorizedException("Not allowed to view this doctor's slots");
@@ -60,23 +60,17 @@ public class SlotServiceImpl implements SlotService {
 
         checkAccess(userId, doctorId);
 
-        // 1) Disponibilità del medico
-        List<DoctorAvailability> availability = availabilityRepo.findByDoctorId(doctorId);
 
-        DayOfWeek dow = date.getDayOfWeek();
-
-        DoctorAvailability dayAvailability = availability.stream()
-                .filter(a -> a.getDayOfWeek().equals(dow))
-                .findFirst()
+        DoctorAvailability availability = availabilityRepo
+                .findByDoctorIdAndDayOfWeek(doctorId, date.getDayOfWeek())
                 .orElse(null);
 
-        if (dayAvailability == null) return List.of();
+        if (availability == null) return List.of();
 
-        // 2) Durata servizio
+
         ServiceType service = serviceRepo.findById(serviceTypeId)
                 .orElseThrow(() -> new ResourceNotFoundException("ServiceType not found"));
 
-        // Controllo che il serviceType appartenga al medico
         Doctor doctor = doctorRepo.findById(doctorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
 
@@ -85,28 +79,24 @@ public class SlotServiceImpl implements SlotService {
         }
 
         int serviceDuration = service.getDurationMinutes();
-        int slotMinutes = dayAvailability.getSlotMinutes();
 
-        // 3) Generazione slot
+
         List<SlotDto> slots = new ArrayList<>();
 
-        LocalTime t = dayAvailability.getStartTime();
+        LocalTime t = availability.getStartTime();
+        LocalTime end = availability.getEndTime();
 
-        while (!t.plusMinutes(slotMinutes).isAfter(dayAvailability.getEndTime())) {
+        while (!t.plusMinutes(serviceDuration).isAfter(end)) {
 
             Instant slotStart = date.atTime(t).atZone(ZoneId.systemDefault()).toInstant();
-            Instant slotEnd = slotStart.plus(slotMinutes, ChronoUnit.MINUTES);
-
-            // Lo slot deve essere abbastanza lungo per contenere il servizio
-            if (t.plusMinutes(serviceDuration).isAfter(dayAvailability.getEndTime())) {
-                break;
-            }
+            Instant slotEnd = slotStart.plus(serviceDuration, ChronoUnit.MINUTES);
 
             boolean taken = appointmentRepo.overlaps(doctorId, slotStart, slotEnd);
 
             slots.add(new SlotDto(t, !taken));
 
-            t = t.plusMinutes(slotMinutes);
+
+            t = t.plusMinutes(serviceDuration);
         }
 
         return slots;

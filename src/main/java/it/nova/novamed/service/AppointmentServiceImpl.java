@@ -185,16 +185,15 @@ public class AppointmentServiceImpl implements AppointmentService {
     // ---------------------------------------------------------
     public List<AppointmentDto> getByPatient(Long userId, Long patientId) {
 
-        // 1. Recupero il paziente loggato
         Patient loggedPatient = patientRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
 
-        // 2. Controllo che stia chiedendo i SUOI appuntamenti
+
         if (!loggedPatient.getId().equals(patientId)) {
             throw new UnauthorizedException("Not your appointments");
         }
 
-        // 3. Ritorno la lista senza cercare appointment singoli
+
         return appointmentRepository.findByPatientId(patientId)
                 .stream()
                 .map(mapper::toDTO)

@@ -4,7 +4,7 @@ import it.nova.novamed.dto.patient.CreatePatientRequest;
 import it.nova.novamed.dto.patient.PatientDto;
 import it.nova.novamed.model.Patient;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+
 
 @Component
 public class PatientMapper {

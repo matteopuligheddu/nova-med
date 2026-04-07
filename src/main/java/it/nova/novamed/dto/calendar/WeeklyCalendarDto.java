@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 public class WeeklyCalendarDto {
 
-    private LocalDate weekStart; // lunedì
-    private LocalDate weekEnd;   // domenica
+    private LocalDate weekStart;
+    private LocalDate weekEnd;
 
     private List<WeeklyCalendarDayDto> days;
 }

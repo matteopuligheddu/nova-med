@@ -48,12 +48,12 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
 
-        // Verifica password attuale
+
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new UnauthorizedException("Old password is incorrect");
         }
 
-        // Aggiorna password
+
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
         user.setMustChangePassword(false);

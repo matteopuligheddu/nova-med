@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
         error.put("error", ex.getReason());
         return ResponseEntity.status(ex.getStatusCode()).body(error);
     }
-    // 500 (solo per errori NON previsti)
+    // 500
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntime(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body(ex.getMessage()));

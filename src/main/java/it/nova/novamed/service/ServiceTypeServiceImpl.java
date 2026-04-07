@@ -41,7 +41,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 // ---------------------------------------------------------
     public List<ServiceTypeDto> getByDoctor(Long userId, Long doctorId) {
 
-        // Admin → può vedere tutto
+
         if (adminService.isAdmin(userId)) {
             return serviceTypeRepository.findAllByDoctorId(doctorId)
                     .stream()
@@ -49,7 +49,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
                     .toList();
         }
 
-        // Doctor → può vedere solo i propri servizi
+
         if (adminService.isDoctor(userId)) {
             Doctor doctor = doctorRepository.findByUser_Id(userId)
                     .orElseThrow(() -> new UnauthorizedException("Doctor not found"));
@@ -64,7 +64,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
                     .toList();
         }
 
-        // Patient → può vedere i servizi del medico (pubblico)
+
         if (adminService.isPatient(userId)) {
             return serviceTypeRepository.findAllByDoctorId(doctorId)
                     .stream()
@@ -90,7 +90,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 // ---------------------------------------------------------
     public ServiceTypeDto create(Long userId, CreateServiceTypeRequest request) {
 
-        // ADMIN → può creare servizi per qualsiasi medico
+
         if (adminService.isAdmin(userId)) {
             Doctor doctor = doctorRepository.findById(request.getDoctorId())
                     .orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
@@ -101,7 +101,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
             return mapper.toDTO(serviceTypeRepository.save(s));
         }
 
-        // DOCTOR → può creare servizi SOLO per sé stesso
+
         if (adminService.isDoctor(userId)) {
 
             Doctor doctor = doctorRepository.findByUser_Id(userId)
@@ -131,10 +131,10 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 
         Long doctorId = s.getDoctor().getId();
 
-        // Admin può aggiornare tutto
+
         if (!adminService.isAdmin(userId)) {
 
-            // Se è un dottore, deve essere il proprietario
+
             if (adminService.isDoctor(userId)) {
                 Doctor doctor = doctorRepository.findByUser_Id(userId)
                         .orElseThrow(() -> new UnauthorizedException("Doctor not found"));
@@ -147,7 +147,7 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
             }
         }
 
-        // Impediamo di cambiare il medico del servizio
+
         if (!doctorId.equals(request.getDoctorId())) {
             throw new UnauthorizedException("Cannot change the doctor of a service type");
         }
@@ -170,13 +170,13 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
 
         Long doctorId = s.getDoctor().getId();
 
-        // ADMIN → può eliminare tutto
+
         if (adminService.isAdmin(userId)) {
             serviceTypeRepository.delete(s);
             return;
         }
 
-        // DOCTOR → può eliminare solo i propri servizi
+
         if (adminService.isDoctor(userId)) {
             Doctor doctor = doctorRepository.findByUser_Id(userId)
                     .orElseThrow(() -> new UnauthorizedException("Doctor not found"));

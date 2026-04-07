@@ -6,10 +6,8 @@ import it.nova.novamed.dto.doctor.UpdateDoctorRequest;
 import it.nova.novamed.dto.patient.CreatePatientRequest;
 import it.nova.novamed.dto.patient.PatientDto;
 import it.nova.novamed.dto.patient.UpdatePatientRequest;
-import it.nova.novamed.model.Appointment;
 import it.nova.novamed.model.Doctor;
 import it.nova.novamed.model.Patient;
-import it.nova.novamed.model.User;
 
 import java.util.List;
 

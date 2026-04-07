@@ -25,7 +25,7 @@ public class ServiceTypeController {
     private final ServiceTypeService serviceTypeService;
 
     // ---------------------------------------------------------
-    // CREATE (ADMIN ONLY - controllo nel service)
+    // CREATE (ADMIN ONLY)
     // ---------------------------------------------------------
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -56,7 +56,7 @@ public class ServiceTypeController {
     }
 
     // ---------------------------------------------------------
-    // UPDATE (ADMIN or DOCTOR OWNER - service check)
+    // UPDATE (ADMIN or DOCTOR OWNER)
     // ---------------------------------------------------------
     @PutMapping("/{serviceTypeId}")
     public ServiceTypeDto update(
@@ -71,7 +71,7 @@ public class ServiceTypeController {
     }
 
     // ---------------------------------------------------------
-    // DELETE (ADMIN ONLY - service check)
+    // DELETE (ADMIN ONLY)
     // ---------------------------------------------------------
     @DeleteMapping("/{serviceTypeId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -86,7 +86,7 @@ public class ServiceTypeController {
     }
 
     // ---------------------------------------------------------
-    // GET BY DOCTOR (ADMIN or DOCTOR OWNER - service check)
+    // GET BY DOCTOR (ADMIN or DOCTOR OWNER)
     // ---------------------------------------------------------
     @GetMapping("/doctor/{doctorId}")
     public List<ServiceTypeDto> getByDoctor(

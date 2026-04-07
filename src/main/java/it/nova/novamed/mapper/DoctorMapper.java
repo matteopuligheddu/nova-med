@@ -16,14 +16,14 @@ public class DoctorMapper {
         dto.setLastName(doctor.getLastName());
         dto.setSpecialization(doctor.getSpecialization());
 
-        // User associato
+
         if (doctor.getUser() != null) {
             dto.setUserId(doctor.getUser().getId());
             dto.setEmail(doctor.getUser().getEmail());
             dto.setRole(doctor.getUser().getRole().name());
         }
 
-        // Servizi offerti
+
         if (doctor.getServiceTypes() != null) {
             dto.setServiceTypes(
                     doctor.getServiceTypes().stream()
@@ -39,7 +39,7 @@ public class DoctorMapper {
             );
         }
 
-        // Numero appuntamenti
+
         dto.setAppointmentsCount(
                 doctor.getAppointments() != null ? doctor.getAppointments().size() : 0
         );

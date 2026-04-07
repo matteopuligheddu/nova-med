@@ -14,8 +14,6 @@ public class DoctorAvailabilityMapper {
         dto.setDayOfWeek(a.getDayOfWeek());
         dto.setStartTime(a.getStartTime());
         dto.setEndTime(a.getEndTime());
-        dto.setSlotMinutes(a.getSlotMinutes());
         return dto;
     }
 }
-

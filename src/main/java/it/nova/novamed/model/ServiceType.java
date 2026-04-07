@@ -11,7 +11,7 @@ public class ServiceType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; //Tipologia visita
+    private String name;
     private String description;
     private Integer price;
     private Integer durationMinutes;

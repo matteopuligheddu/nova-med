@@ -2,10 +2,7 @@ package it.nova.novamed.mapper;
 
 import it.nova.novamed.dto.service.CreateServiceTypeRequest;
 import it.nova.novamed.dto.service.ServiceTypeDto;
-import it.nova.novamed.model.Doctor;
 import it.nova.novamed.model.ServiceType;
-import it.nova.novamed.repository.DoctorRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,7 +25,7 @@ public class ServiceTypeMapper {
         s.setDescription(request.getDescription());
         s.setPrice(request.getPrice());
         s.setDurationMinutes(request.getDurationMinutes());
-        // il doctor si setta nel service
+
         return s;
     }
 }

@@ -11,6 +11,5 @@ public class DoctorAvailabilityDto {
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private LocalTime endTime;
-    private int slotMinutes;
 }
 

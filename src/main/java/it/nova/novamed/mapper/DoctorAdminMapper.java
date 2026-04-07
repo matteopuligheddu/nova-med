@@ -2,7 +2,6 @@ package it.nova.novamed.mapper;
 
 import it.nova.novamed.dto.admin.DoctorAdminDto;
 import it.nova.novamed.dto.admin.UserAdminDto;
-import it.nova.novamed.dto.service.ServiceTypeDto;
 import it.nova.novamed.model.Doctor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

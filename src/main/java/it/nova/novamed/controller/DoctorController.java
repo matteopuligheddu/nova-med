@@ -79,18 +79,20 @@ public class DoctorController {
                 serviceTypeId
         );
 
-        // Paziente → vede solo slot liberi
+        // Patient → see free slots only
         if (adminService.isPatient(userId)) {
             return slots.stream()
                     .filter(SlotDto::free)
                     .toList();
         }
 
-        // Admin e Doctor → vedono tutto
+        // Admin/Doctor → see all
         return slots;
     }
 
-    // LISTA MEDICI (visibile a tutti gli utenti loggati)
+    // ---------------------------------------------------------
+    // DOCTORS LIST
+    // ---------------------------------------------------------
     @GetMapping
     public List<DoctorDto> getAllDoctors(HttpServletRequest request) {
         HttpSession session = requireSession(request);

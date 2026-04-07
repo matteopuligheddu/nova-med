@@ -27,16 +27,16 @@ public class AppointmentMapper {
         dto.setDoctor(doctorMapper.toDTO(a.getDoctor()));
         dto.setServiceType(serviceTypeMapper.toDTO(a.getServiceType()));
 
-        // QUI era l’errore: "appointment" → "a"
+
         dto.setServiceTypeName(a.getServiceType().getName());
 
-        // Nome completo del paziente
+
         dto.setPatientName(a.getPatient().getFirstName() + " " + a.getPatient().getLastName());
 
-        // Nome completo del medico
+
         dto.setDoctorName(a.getDoctor().getFirstName() + " " + a.getDoctor().getLastName());
 
-        // Note
+
         dto.setNotes(a.getNotes());
 
         return dto;

@@ -2,7 +2,7 @@ package it.nova.novamed.dto.doctor;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import java.time.LocalTime;
+
 
 @Data
 public class CreateDoctorRequest {

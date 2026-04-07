@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +34,10 @@ public class AppointmentCalendarServiceImpl implements AppointmentCalendarServic
     // ---------------------------------------------------------
     private void checkAccess(Long userId, Long doctorId) {
 
-        // Admin può vedere tutto
+
         if (adminService.isAdmin(userId)) return;
 
-        // Il dottore può vedere solo il proprio calendario
+
         if (adminService.isDoctor(userId)) {
             Doctor doctor = doctorRepository.findByUser_Id(userId)
                     .orElseThrow(() -> new UnauthorizedException("Doctor not found"));
@@ -46,7 +45,7 @@ public class AppointmentCalendarServiceImpl implements AppointmentCalendarServic
             if (doctor.getId().equals(doctorId)) return;
         }
 
-        // Il paziente può vedere il calendario del medico (solo per prenotare)
+
         if (adminService.isPatient(userId)) {
             return;
         }
@@ -75,7 +74,7 @@ public class AppointmentCalendarServiceImpl implements AppointmentCalendarServic
             throw new IllegalArgumentException("This service does not belong to the doctor");
         }
 
-        int serviceDuration = serviceType.getDurationMinutes();
+        int slotMinutes = serviceType.getDurationMinutes();
 
         DayOfWeek dow = date.getDayOfWeek();
 
@@ -85,13 +84,8 @@ public class AppointmentCalendarServiceImpl implements AppointmentCalendarServic
 
         if (availability == null) return List.of();
 
-        int slotMinutes = availability.getSlotMinutes();
         LocalTime start = availability.getStartTime();
         LocalTime end = availability.getEndTime();
-
-        if (slotMinutes <= 0) {
-            throw new IllegalStateException("Invalid slotMinutes: " + slotMinutes);
-        }
 
         if (start == null || end == null) {
             throw new IllegalStateException("Availability times cannot be null");
@@ -229,8 +223,6 @@ public class AppointmentCalendarServiceImpl implements AppointmentCalendarServic
             Long serviceTypeId,
             LocalDate date
     ) {
-        // Il paziente può vedere solo slot liberi, non il calendario completo
-        // Quindi NON deve vedere appuntamenti BOOKED
 
         List<CalendarSlotDto> slots = getDoctorCalendar(
                 userId,
@@ -240,7 +232,7 @@ public class AppointmentCalendarServiceImpl implements AppointmentCalendarServic
         );
 
         return slots.stream()
-                .filter(s -> !s.isBooked())   // slot liberi
+                .filter(s -> !s.isBooked())
                 .map(CalendarSlotDto::getStartTime)
                 .toList();
     }
