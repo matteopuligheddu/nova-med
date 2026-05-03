@@ -7,6 +7,7 @@ import it.nova.novamed.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class DoctorControllerIT {
 
     @Autowired
@@ -139,10 +141,6 @@ class DoctorControllerIT {
 
     @Test
     void getSlots_patientSeesOnlyFreeSlots() throws Exception {
-        // Mock degli slot generati dal service
-        // Qui assumiamo che SlotService generi slot con "free = true/false"
-        // In un test reale potresti mockare il service, ma negli integration test
-        // si usa il comportamento reale.
 
         mockMvc.perform(get("/api/doctors/" + doctor.getId() + "/slots")
                         .session(patientSession())

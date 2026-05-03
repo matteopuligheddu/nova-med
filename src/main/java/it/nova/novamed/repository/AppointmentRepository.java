@@ -17,7 +17,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long>,
 
     List<Appointment> findByDoctorIdAndDateBetween(Long doctorId, Instant start, Instant end);
 
-    boolean existsByDoctor_IdAndDate(Long doctorId, Instant date);
+
 
     @Query("""
         SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END

@@ -37,8 +37,8 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
     }
 
     // ---------------------------------------------------------
-// GET BY DOCTOR (admin, doctor owner, patient)
-// ---------------------------------------------------------
+    // GET BY DOCTOR (admin, doctor owner, patient)
+    // ---------------------------------------------------------
     public List<ServiceTypeDto> getByDoctor(Long userId, Long doctorId) {
 
 
@@ -86,8 +86,8 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
     }
 
     // ---------------------------------------------------------
-// CREATE (ADMIN or DOCTOR OWNER)
-// ---------------------------------------------------------
+    // CREATE (ADMIN or DOCTOR OWNER)
+    // ---------------------------------------------------------
     public ServiceTypeDto create(Long userId, CreateServiceTypeRequest request) {
 
 
@@ -161,8 +161,8 @@ public class ServiceTypeServiceImpl implements ServiceTypeService {
     }
 
     // ---------------------------------------------------------
-// DELETE (ADMIN or DOCTOR OWNER)
-// ---------------------------------------------------------
+    // DELETE (ADMIN or DOCTOR OWNER)
+    // ---------------------------------------------------------
     public void delete(Long userId, Long serviceTypeId) {
 
         ServiceType s = serviceTypeRepository.findById(serviceTypeId)

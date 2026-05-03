@@ -9,6 +9,7 @@ import it.nova.novamed.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 
 class AuthControllerIT {
 
@@ -115,7 +117,6 @@ class AuthControllerIT {
         mockMvc.perform(post("/api/auth/logout").session(session))
                 .andExpect(status().isOk());
 
-        // Dopo il logout NON devi riutilizzare la vecchia sessione
         mockMvc.perform(get("/api/auth/me"))
                 .andExpect(status().isUnauthorized());
     }

@@ -9,7 +9,6 @@ import it.nova.novamed.service.AppointmentCalendarService;
 import it.nova.novamed.service.AppointmentService;
 import it.nova.novamed.service.DoctorService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -90,8 +90,8 @@ class AppointmentControllerTest {
                         .sessionAttr("role", "PATIENT")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                            {"doctorId":5,"serviceTypeId":10,"date":"2025-01-01","time":"10:00"}
-                        """))
+                                    {"doctorId":5,"serviceTypeId":10,"date":"2025-01-01","time":"10:00"}
+                                """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(99L));
     }
@@ -101,8 +101,8 @@ class AppointmentControllerTest {
         mockMvc.perform(post("/api/appointments")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                            {"doctorId":5,"serviceTypeId":10,"date":"2025-01-01","time":"10:00"}
-                        """))
+                                    {"doctorId":5,"serviceTypeId":10,"date":"2025-01-01","time":"10:00"}
+                                """))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -123,8 +123,8 @@ class AppointmentControllerTest {
                         .sessionAttr("role", "PATIENT")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                            {"doctorId":5,"serviceTypeId":10,"date":"2025-01-01","time":"11:00"}
-                        """))
+                                    {"doctorId":5,"serviceTypeId":10,"date":"2025-01-01","time":"11:00"}
+                                """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(10L));
     }
@@ -283,8 +283,8 @@ class AppointmentControllerTest {
                         .sessionAttr("role", "DOCTOR")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                            {"notes":"note test"}
-                        """))
+                                    {"notes":"note test"}
+                                """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(10L));
     }

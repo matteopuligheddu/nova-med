@@ -1,6 +1,5 @@
 package it.nova.novamed.service;
 
-import it.nova.novamed.dto.appointment.AppointmentDto;
 import it.nova.novamed.dto.calendar.CalendarSlotDto;
 import it.nova.novamed.dto.calendar.MonthlyCalendarDto;
 import it.nova.novamed.dto.calendar.WeeklyCalendarDto;
@@ -154,7 +153,6 @@ class AppointmentCalendarServiceImplTest {
         DoctorAvailability av = new DoctorAvailability();
         av.setStartTime(LocalTime.of(9, 0));
         av.setEndTime(LocalTime.of(10, 0));
-        av.setSlotMinutes(30);
 
         when(doctorRepository.findById(5L)).thenReturn(Optional.of(d));
         when(serviceTypeRepository.findById(10L)).thenReturn(Optional.of(s));
@@ -188,7 +186,6 @@ class AppointmentCalendarServiceImplTest {
         DoctorAvailability av = new DoctorAvailability();
         av.setStartTime(LocalTime.of(9, 0));
         av.setEndTime(LocalTime.of(10, 0));
-        av.setSlotMinutes(30);
 
         Appointment ap = new Appointment();
         ap.setDate(LocalDate.of(2025, 1, 6).atTime(9, 0)

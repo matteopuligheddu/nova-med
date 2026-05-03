@@ -118,7 +118,9 @@ class SlotServiceImplTest {
     void generateSlots_noAvailability_returnsEmpty() {
         mockAccessOk();
 
-        when(availabilityRepo.findByDoctorId(5L)).thenReturn(List.of());
+        when(availabilityRepo.findByDoctorIdAndDayOfWeek(5L, DayOfWeek.MONDAY))
+                .thenReturn(Optional.empty());
+
 
         List<SlotDto> result = service.generateSlots(
                 1L, 5L, LocalDate.of(2025, 1, 6), 10L
@@ -134,7 +136,8 @@ class SlotServiceImplTest {
         DoctorAvailability av = new DoctorAvailability();
         av.setDayOfWeek(DayOfWeek.MONDAY);
 
-        when(availabilityRepo.findByDoctorId(5L)).thenReturn(List.of(av));
+        when(availabilityRepo.findByDoctorIdAndDayOfWeek(5L, DayOfWeek.MONDAY))
+                .thenReturn(Optional.of(av));
         when(serviceRepo.findById(10L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () ->
@@ -149,7 +152,8 @@ class SlotServiceImplTest {
         DoctorAvailability av = new DoctorAvailability();
         av.setDayOfWeek(DayOfWeek.MONDAY);
 
-        when(availabilityRepo.findByDoctorId(5L)).thenReturn(List.of(av));
+        when(availabilityRepo.findByDoctorIdAndDayOfWeek(5L, DayOfWeek.MONDAY))
+                .thenReturn(Optional.of(av));
         when(serviceRepo.findById(10L)).thenReturn(Optional.of(new ServiceType()));
         when(doctorRepo.findById(5L)).thenReturn(Optional.empty());
 
@@ -170,9 +174,10 @@ class SlotServiceImplTest {
 
         Doctor d = new Doctor();
         d.setId(5L);
-        d.setServiceTypes(List.of()); // non contiene s
+        d.setServiceTypes(List.of());
 
-        when(availabilityRepo.findByDoctorId(5L)).thenReturn(List.of(av));
+        when(availabilityRepo.findByDoctorIdAndDayOfWeek(5L, DayOfWeek.MONDAY))
+                .thenReturn(Optional.of(av));
         when(serviceRepo.findById(10L)).thenReturn(Optional.of(s));
         when(doctorRepo.findById(5L)).thenReturn(Optional.of(d));
 
@@ -189,7 +194,7 @@ class SlotServiceImplTest {
         av.setDayOfWeek(DayOfWeek.MONDAY);
         av.setStartTime(LocalTime.of(9, 0));
         av.setEndTime(LocalTime.of(10, 0));
-        av.setSlotMinutes(30);
+
 
         ServiceType s = new ServiceType();
         s.setId(10L);
@@ -199,7 +204,8 @@ class SlotServiceImplTest {
         d.setId(5L);
         d.setServiceTypes(List.of(s));
 
-        when(availabilityRepo.findByDoctorId(5L)).thenReturn(List.of(av));
+        when(availabilityRepo.findByDoctorIdAndDayOfWeek(5L, DayOfWeek.MONDAY))
+                .thenReturn(Optional.of(av));
         when(serviceRepo.findById(10L)).thenReturn(Optional.of(s));
         when(doctorRepo.findById(5L)).thenReturn(Optional.of(d));
         when(appointmentRepo.overlaps(any(), any(), any())).thenReturn(false);
@@ -220,7 +226,7 @@ class SlotServiceImplTest {
         av.setDayOfWeek(DayOfWeek.MONDAY);
         av.setStartTime(LocalTime.of(9, 0));
         av.setEndTime(LocalTime.of(10, 0));
-        av.setSlotMinutes(30);
+
 
         ServiceType s = new ServiceType();
         s.setId(10L);
@@ -230,7 +236,8 @@ class SlotServiceImplTest {
         d.setId(5L);
         d.setServiceTypes(List.of(s));
 
-        when(availabilityRepo.findByDoctorId(5L)).thenReturn(List.of(av));
+        when(availabilityRepo.findByDoctorIdAndDayOfWeek(5L, DayOfWeek.MONDAY))
+                .thenReturn(Optional.of(av));
         when(serviceRepo.findById(10L)).thenReturn(Optional.of(s));
         when(doctorRepo.findById(5L)).thenReturn(Optional.of(d));
         when(appointmentRepo.overlaps(any(), any(), any())).thenReturn(true);

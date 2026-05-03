@@ -7,6 +7,7 @@ import it.nova.novamed.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class AppointmentControllerIT {
 
     @Autowired
@@ -110,7 +112,6 @@ class AppointmentControllerIT {
         availability.setDayOfWeek(LocalDate.now().plusDays(1).getDayOfWeek());
         availability.setStartTime(LocalTime.of(9, 0));
         availability.setEndTime(LocalTime.of(18, 0));
-        availability.setSlotMinutes(30);
         doctorAvailabilityRepository.save(availability);
 
         // SERVICE TYPE
@@ -142,7 +143,6 @@ class AppointmentControllerIT {
         session.setAttribute("SPRING_SECURITY_CONTEXT", context);
         session.setAttribute("role", Role.PATIENT);
 
-        // 🔥 NECESSARIO PER IL TUO CONTROLLER
         session.setAttribute("userId", patientUser.getId());
 
         return session;
@@ -164,7 +164,6 @@ class AppointmentControllerIT {
         session.setAttribute("SPRING_SECURITY_CONTEXT", context);
         session.setAttribute("role", Role.DOCTOR);
 
-        // 🔥 NECESSARIO PER IL TUO CONTROLLER
         session.setAttribute("userId", doctorUser.getId());
 
         return session;
@@ -227,7 +226,7 @@ class AppointmentControllerIT {
 
         a.setStatus(AppointmentStatus.BOOKED);
         appointmentRepository.save(a);
-        // 🔥 DEBUG: controlliamo cosa c’è nella sessione
+
         MockHttpSession s = patientSession();
 
         mockMvc.perform(patch("/api/appointments/" + a.getId() + "/cancel")

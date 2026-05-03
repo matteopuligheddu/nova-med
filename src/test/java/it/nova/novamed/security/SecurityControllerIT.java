@@ -8,6 +8,7 @@ import it.nova.novamed.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class SecurityControllerIT {
 
     @Autowired
@@ -59,7 +61,6 @@ class SecurityControllerIT {
         patient.setUser(patientUser);
         patientRepository.save(patient);
 
-        // *** COLLEGAMENTO BIDIREZIONALE ***
         patientUser.setPatient(patient);
         userRepository.save(patientUser);
 
@@ -75,7 +76,6 @@ class SecurityControllerIT {
         doctor.setUser(doctorUser);
         doctorRepository.save(doctor);
 
-        // *** COLLEGAMENTO BIDIREZIONALE ***
         doctorUser.setDoctor(doctor);
         userRepository.save(doctorUser);
     }

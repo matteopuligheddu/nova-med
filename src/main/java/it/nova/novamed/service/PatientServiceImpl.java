@@ -37,7 +37,9 @@ public class PatientServiceImpl implements PatientService {
         return patientMapper.toDTO(patient);
     }
 
+    // ---------------------------------------------------------
     // REGISTER (PUBLIC)
+    // ---------------------------------------------------------
     public PatientDto register(CreatePatientRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -59,7 +61,9 @@ public class PatientServiceImpl implements PatientService {
         return patientMapper.toDTO(patientRepository.save(patient));
     }
 
+    // ---------------------------------------------------------
     // UPDATE (OWNER ONLY)
+    // ---------------------------------------------------------
     public PatientDto updateMyProfile(Long userId, UpdatePatientRequest request) {
         adminService.checkPatient(userId);
 

@@ -46,7 +46,6 @@ class AppointmentValidationServiceImplTest {
         DoctorAvailability a = new DoctorAvailability();
         a.setStartTime(start);
         a.setEndTime(end);
-        a.setSlotMinutes(slot);
         return a;
     }
 

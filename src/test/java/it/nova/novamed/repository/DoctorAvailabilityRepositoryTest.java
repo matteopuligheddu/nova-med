@@ -32,7 +32,7 @@ class DoctorAvailabilityRepositoryTest {
         a.setDayOfWeek(DayOfWeek.MONDAY);
         a.setStartTime(LocalTime.of(9, 0));
         a.setEndTime(LocalTime.of(17, 0));
-        a.setSlotMinutes(30);
+
 
         em.persist(a);
 

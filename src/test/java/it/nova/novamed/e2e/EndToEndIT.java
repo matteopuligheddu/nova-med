@@ -9,6 +9,7 @@ import it.nova.novamed.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 class EndToEndIT {
 
     @Autowired
@@ -49,15 +51,20 @@ class EndToEndIT {
     @Autowired
     private DoctorAvailabilityRepository doctorAvailabilityRepository;
 
+    @Autowired
+    private AdminRepository adminRepository;
+
     private Doctor doctor;
     private ServiceType serviceType;
 
     @BeforeEach
     void setup() {
         appointmentRepository.deleteAll();
+        doctorAvailabilityRepository.deleteAll();
         serviceTypeRepository.deleteAll();
         doctorRepository.deleteAll();
         patientRepository.deleteAll();
+        adminRepository.deleteAll();
         userRepository.deleteAll();
 
         // Create doctor + service type
@@ -80,7 +87,6 @@ class EndToEndIT {
         availability.setDayOfWeek(LocalDate.now().plusDays(1).getDayOfWeek());
         availability.setStartTime(LocalTime.of(9, 0));
         availability.setEndTime(LocalTime.of(18, 0));
-        availability.setSlotMinutes(30);
         doctorAvailabilityRepository.save(availability);
 
         serviceType = new ServiceType();

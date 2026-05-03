@@ -241,8 +241,8 @@ public class AdminServiceImpl implements AdminService {
 
 
     // ---------------------------------------------------------
-// CHECK PATIENT
-// ---------------------------------------------------------
+    // CHECK PATIENT
+    // ---------------------------------------------------------
     public void checkPatient(Long userId) {
         if (userId == null)
             throw new UnauthorizedException("User not logged in");

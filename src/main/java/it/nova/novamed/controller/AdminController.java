@@ -54,8 +54,8 @@ public class AdminController {
 
 
     // ---------------------------------------------------------
-// CREATE DOCTOR
-// ---------------------------------------------------------
+    // CREATE DOCTOR
+    // ---------------------------------------------------------
     @PostMapping("/doctors")
     public Doctor createDoctor(
             HttpServletRequest request,
@@ -69,8 +69,8 @@ public class AdminController {
     }
 
     // ---------------------------------------------------------
-// CREATE PATIENT
-// ---------------------------------------------------------
+    // CREATE PATIENT
+    // ---------------------------------------------------------
     @PostMapping("/patients")
     public Patient createPatient(
             HttpServletRequest request,
@@ -84,16 +84,16 @@ public class AdminController {
     }
 
     // ---------------------------------------------------------
-// GET ALL PATIENTS
-// ---------------------------------------------------------
+    // GET ALL PATIENTS
+    // ---------------------------------------------------------
     @GetMapping("/patients")
     public List<PatientAdminDto> getAllPatients() {
         return PatientAdminMapper.toDTOList(patientRepository.findAll());
     }
 
     // ---------------------------------------------------------
-// GET ALL DOCTORS
-// ---------------------------------------------------------
+    // GET ALL DOCTORS
+    // ---------------------------------------------------------
     @GetMapping("/doctors")
     public List<DoctorAdminDto> getAllDoctors() {
         return doctorAdminMapper.toDTOList(doctorRepository.findAll());
@@ -101,8 +101,8 @@ public class AdminController {
 
 
     // ---------------------------------------------------------
-// GET PATIENT BY ID
-// ---------------------------------------------------------
+    // GET PATIENT BY ID
+    // ---------------------------------------------------------
     @GetMapping("/patients/{patientId}")
     public PatientAdminDto getPatient(@PathVariable Long patientId) {
         Patient patient = patientRepository.findById(patientId)
@@ -111,8 +111,8 @@ public class AdminController {
     }
 
     // ---------------------------------------------------------
-// GET DOCTOR BY ID
-// ---------------------------------------------------------
+    // GET DOCTOR BY ID
+    // ---------------------------------------------------------
     @GetMapping("/doctors/{doctorId}")
     public DoctorAdminDto getDoctor(@PathVariable Long doctorId) {
         Doctor doctor = doctorRepository.findById(doctorId)
@@ -122,8 +122,8 @@ public class AdminController {
 
 
     // ---------------------------------------------------------
-// UPDATE PATIENT
-// ---------------------------------------------------------
+    // UPDATE PATIENT
+    // ---------------------------------------------------------
     @PutMapping("/patients/{id}")
     public PatientDto updatePatient(
             HttpServletRequest request,
@@ -138,8 +138,8 @@ public class AdminController {
     }
 
     // ---------------------------------------------------------
-// UPDATE DOCTOR
-// ---------------------------------------------------------
+    // UPDATE DOCTOR
+    // ---------------------------------------------------------
     @PutMapping("/doctors/{id}")
     public DoctorDto updateDoctor(
             HttpServletRequest request,
@@ -154,8 +154,8 @@ public class AdminController {
     }
 
     // ---------------------------------------------------------
-// DELETE USER
-// ---------------------------------------------------------
+    // DELETE USER
+    // ---------------------------------------------------------
     @DeleteMapping("/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(
@@ -170,8 +170,8 @@ public class AdminController {
     }
 
     // ---------------------------------------------------------
-// GET ALL APPOINTMENTS
-// ---------------------------------------------------------
+    // GET ALL APPOINTMENTS
+    // ---------------------------------------------------------
     @GetMapping("/appointments")
     public List<AppointmentDto> getAllAppointments(HttpServletRequest request) {
         HttpSession session = requireSession(request);
@@ -182,8 +182,8 @@ public class AdminController {
     }
 
     // ---------------------------------------------------------
-// DELETE APPOINTMENT
-// ---------------------------------------------------------
+    // DELETE APPOINTMENT
+    // ---------------------------------------------------------
     @DeleteMapping("/appointments/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAppointment(

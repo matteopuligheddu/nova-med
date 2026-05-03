@@ -111,8 +111,8 @@ public class AppointmentController {
         return appointmentService.getByPatient(userId, patientId);
     }
     // ---------------------------------------------------------
-// GET MY APPOINTMENTS (patient only)
-// ---------------------------------------------------------
+    // GET MY APPOINTMENTS (patient only)
+    // ---------------------------------------------------------
     @GetMapping("/patient/me")
     public List<AppointmentDto> getMyAppointments(HttpServletRequest request) {
         HttpSession session = requireSession(request);
@@ -122,7 +122,7 @@ public class AppointmentController {
         Patient p = patientRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
 
-        // Ritorno i suoi appuntamenti
+        // Restituisco i suoi appuntamenti
         return appointmentService.getByPatient(userId, p.getId());
     }
 

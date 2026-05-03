@@ -175,16 +175,19 @@ class DoctorAvailabilityServiceImplTest {
     void update_doctorNotOwner_throws() {
         UpdateDoctorAvailabilityRequest req = new UpdateDoctorAvailabilityRequest();
 
-        Doctor doctor = new Doctor();
-        doctor.setId(99L);
+        Doctor owner = new Doctor();
+        owner.setId(99L);
 
         DoctorAvailability existing = new DoctorAvailability();
-        existing.setDoctor(doctor);
+        existing.setDoctor(owner);
 
         when(availabilityRepo.findById(10L)).thenReturn(Optional.of(existing));
         when(adminService.isAdmin(1L)).thenReturn(false);
         when(adminService.isDoctor(1L)).thenReturn(true);
-        when(doctorRepo.findByUser_Id(1L)).thenReturn(Optional.of(new Doctor()));
+
+        Doctor loggedDoctor = new Doctor();
+        loggedDoctor.setId(1L);
+        when(doctorRepo.findByUser_Id(1L)).thenReturn(Optional.of(loggedDoctor));
 
         assertThrows(UnauthorizedException.class, () -> service.update(1L, 10L, req));
     }

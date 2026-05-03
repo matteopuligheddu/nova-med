@@ -75,7 +75,7 @@ public class AuthController {
     }
 
     // ---------------------------------------------------------
-    // LOGIN (CREATE SESSION + JSESSIONID)
+    // LOGIN
     // ---------------------------------------------------------
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
